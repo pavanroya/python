@@ -1,0 +1,49 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+def scrape_website(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        return soup
+    else:
+        print("Failed to fetch the webpage.")
+        return None
+
+def extract_data(soup):
+    data_list = []
+    # Example: scraping data from a table with class "data-table"
+    table = soup.find('table', class_='data-table')
+    if table:
+        rows = table.find_all('tr')
+        for row in rows:
+            # Example: scraping data from table cells (td)
+            cells = row.find_all('td')
+            if cells:
+                data_row = [cell.text.strip() for cell in cells]
+                data_list.append(data_row)
+    return data_list
+
+def save_to_csv(data, filename):
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        for row in data:
+            writer.writerow(row)
+
+def main():
+    url = "https://example.com"
+    filename = "scraped_data.csv"
+    soup = scrape_website(url)
+    if soup:
+        data = extract_data(soup)
+        if data:
+            save_to_csv(data, filename)
+            print(f"Data has been scraped and saved to {filename}.")
+        else:
+            print("No data found.")
+    else:
+        print("Failed to fetch webpage.")
+
+if __name__ == "__main__":
+    main()
