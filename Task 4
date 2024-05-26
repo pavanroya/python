@@ -1,0 +1,38 @@
+import PyPDF2
+
+def merge_pdfs(pdf_files, output_filename):
+    merger = PyPDF2.PdfFileMerger()
+    for pdf_file in pdf_files:
+        merger.append(pdf_file)
+    merger.write(output_filename)
+    merger.close()
+    print(f"PDF files merged successfully into {output_filename}")
+
+def split_pdf(input_pdf, output_prefix):
+    pdf_reader = PyPDF2.PdfFileReader(input_pdf)
+    for page_number in range(pdf_reader.numPages):
+        pdf_writer = PyPDF2.PdfFileWriter()
+        pdf_writer.addPage(pdf_reader.getPage(page_number))
+        output_filename = f"{output_prefix}_page_{page_number+1}.pdf"
+        with open(output_filename, 'wb') as output_file:
+            pdf_writer.write(output_file)
+        print(f"Page {page_number+1} extracted and saved as {output_filename}")
+
+def main():
+    choice = input("Choose an option (1: Merge PDFs, 2: Split PDF): ")
+    
+    if choice == '1':
+        pdf_files = input("Enter PDF filenames separated by space: ").split()
+        output_filename = input("Enter the output filename for merged PDF: ")
+        merge_pdfs(pdf_files, output_filename)
+    
+    elif choice == '2':
+        input_pdf = input("Enter the input PDF filename: ")
+        output_prefix = input("Enter the output prefix for split PDFs: ")
+        split_pdf(input_pdf, output_prefix)
+    
+    else:
+        print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
